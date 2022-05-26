@@ -4,17 +4,20 @@ import os
 
 wd = os.getcwd()
 
-class Camerasettings(PiCamera):
-    """Objekte zum erstellen verschiedener Kameraoptionen"""
+class Camerasettings(object):
+    """
+        Objekte zum erstellen verschiedener Kameraoptionen
+        Klassenattribute:   cameraInUse : bool
+        Objektattribute:    name : str
+                            path : str
+                            widht : int
+                            hight : int
+                            rotation : int
+                            effect : str
+    """
 
     #Klassenattribute
-    camera: PiCamera = PiCamera()
-    _name: str = "unknown"
-    _path: str = wd + "/" + _name
-    _widht: int = 1024
-    _hight: int = 768
-    _rotation: int = 180
-    _effect: str = "none"
+    cameraInUse : bool = False
 
     #Standardkonstruktor: Intialisiert die Attribute des Objekts
     def __init__(self,  name: str = None,
@@ -26,21 +29,32 @@ class Camerasettings(PiCamera):
 
         if type(name) is str:
             self._name = name
+        else:
+            self._name = "unknown"
 
         if type(path) is str:
             self._path = path
+        else:
+            self._path = wd + "/" + self._name
 
         if type(width) is int:
-            self._width = widht
+            self._width = width
+        else:
+            self.width = 1024
 
         if type(hight) is int:
             self._hight = hight
+        else:
+            self._hight = 768
 
         if type(rotation) is int:
             self._rotation = rotation
+        else: self._rotation = 180
 
         if type(effect) is str:
             self._effect = effect
+        else:
+            self._effect = "none"
 
     #GETTER, SETTER, DELETER Methoden
     #Attribut: name
@@ -104,7 +118,7 @@ class Camerasettings(PiCamera):
     def __str__(self):
         return  "Name: " + str(self._name) + "\n" +\
                 "Path: " + str(self._path) + "\n" +\
-                "Width: " + str(self._widht) + "\n" +\
+                "Width: " + str(self._width) + "\n" +\
                 "Hight: " + str(self._hight) + "\n" +\
                 "Rotation: " + str(self._rotation) + "\n" +\
                 "Effect: " + str(self._effect)
@@ -113,31 +127,44 @@ class Camerasettings(PiCamera):
 #zugänglich zu machen
     #alle möglichen Kameraeffekte ausgeben
     @staticmethod
-    def print_effects():
+    def print_effects(cls):
         print("Diese Effekte stehen zur Auswahl:")
-        for effectName in Camerasettings.camera.IMAGE_EFFECTS:
+        for effectName in PiCamera().IMAGE_EFFECTS:
             print("\t" + effectName)
 
-    @staticmethod
-    def init():
-        Camerasettings.camera.start_preview()
+    @classmethod
+    def init(cls):
+        cls.Camerasettings.camera.start_preview()
         sleep(2)
+        return "Kamera ist einsatzbereit"
 
-    @staticmethod
+    @classmethod
     def exit():
-        Camerasettings.camera.close()
+        cls.Camerasettings.camera.close()
 
 #Kamerafunktionen
     def get_picture(self):
-        try:
-            Camerasettings.camera.resolution = (self._width, self._hight)
-            Camerasettings.camera.rotation = self._rotation
-            Camerasettings.camera.image_effect = self._effect
-            Camerasettings.camera.capture(self._path + ".jpg")
-        except PiCameraError as err:
-            print("unexpectet error: " + str(err))
-            return
-        except KeyboardInterrupt:
-            Camerasettings.camera.close()
-        finally:
-            print("Foto wurde unter " + self._path + ".jpg" + " gespeichert.")
+        if not Camerasettings.cameraInUse:
+            Camerasettings.cameraInUse = True
+            try:
+                camera = PiCamera()
+                camera.resolution = (self._width, self._hight)
+                camera.rotation = self._rotation
+                camera.image_effect = self._effect
+                camera.start_preview()
+                sleep(2)
+                camera.capture(self._path + ".jpg")
+            except PiCameraError as err:
+                print("unexpectet error: " + str(err))
+                camera.close()
+                return -1
+            except KeyboardInterrupt:
+                Camerasettings.camera.close()
+            finally:
+                camera.close()
+                Camerasettings.cameraInUse = False
+                print("Foto wurde unter " + self._path + ".jpg" + " gespeichert.")
+                return 0
+        else:
+            print("Die Kamera wird aktuell verwendet.")
+            return -1
