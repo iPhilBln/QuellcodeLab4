@@ -127,7 +127,7 @@ class Camerasettings(object):
 #zugänglich zu machen
     #alle möglichen Kameraeffekte ausgeben
     @staticmethod
-    def print_effects(cls):
+    def print_effects():
         print("Diese Effekte stehen zur Auswahl:")
         for effectName in PiCamera().IMAGE_EFFECTS:
             print("\t" + effectName)
