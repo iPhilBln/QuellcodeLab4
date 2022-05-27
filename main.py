@@ -32,14 +32,21 @@ def main():
                 effect : str
     """
     name : str = "telegram"
-    path : str = "home/phil/Uniprojekte/Lab4/Applications"
+    path : str = "/home/phil/Uniprojekte/Lab4/Applications"
     telegram: Camerasettings = Camerasettings(name, path)
     set_objListValue(telegram)
 
     name = "browser"
-    path = "home/phil/Uniprojekte/Lab4/Applications"
+    path = "/home/phil/Uniprojekte/Lab4/Applications"
     browser : Camerasettings = Camerasettings(name, path)
     set_objListValue(browser)
+
+    list = get_objList()
+    for obj in list:
+        print(obj)
+
+    telegram.get_picture(0.75)
+    browser.get_picture(0.75)
 
     while True:
         try:
