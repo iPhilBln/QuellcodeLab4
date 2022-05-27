@@ -43,6 +43,7 @@ def main():
 
     list = get_objList()
     for obj in list:
+        print()
         print(obj)
 
     telegram.get_picture(0.75)

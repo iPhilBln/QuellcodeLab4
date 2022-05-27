@@ -7,8 +7,6 @@ import picamera.array
 import numpy as np
 from src.webserver_stream import StreamingOutput, StreamingHandler, StreamingServer, set_page
 
-wd = os.getcwd()
-
 class Camerasettings(picamera.PiCamera):
     """
         Objekte zum Erstellen verschiedener Kameraoptionen
@@ -36,7 +34,7 @@ class Camerasettings(picamera.PiCamera):
         else: self.set_name("unkown")
 
         if type(path) is str: self.set_path(path)
-        else: self.set_path(wd)
+        else: self.set_path(os.getcwd())
 
         if type(width) is int: self.set_width(width)
         else: self.set_width(2592)
