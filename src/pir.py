@@ -12,6 +12,7 @@ def exit_pir():
     GPIO.cleanup()
 
 def mein_callback(channel):
+    print("Bewegung erkannt.")
     try:
         cameraWarmup : float = 0.75
         objList = get_objList()
