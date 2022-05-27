@@ -64,12 +64,10 @@ class Camerasettings(picamera.PiCamera):
     def get_path(self):
         return self._path
     def set_path(self, path: str):
-        if path[0] == "/":
-            path = path[1:]
-        if path[-1] == "/":
-            self._path = "/" + path[:-1] + "/" + self._name
+        if path[-1] != "/":
+            self._path = path + "/" + self._name + "/"
         else:
-            self._path = path + "/" + self._name
+            self._path = path[:-1] + "/" + self._name + "/"
         if not os.path.exists(self._path):
             os.makedirs(self._path)
     def del_path(self):
@@ -153,7 +151,7 @@ class Camerasettings(picamera.PiCamera):
                 try:
                     camera.start_preview()
                     time.sleep(cameraWarmup)
-                    camera.capture(self._path + ".jpg")
+                    camera.capture(self._path + self._name + ".jpg")
                 except PiCameraError as err:
                     print("unerwarteter Fehler: " + str(err))
                     camera.stop_preview()
@@ -165,7 +163,7 @@ class Camerasettings(picamera.PiCamera):
                     camera.stop_preview()
                     camera.close()
                     Camerasettings.cameraInUse = False
-                    print("Foto wurde unter " + self._path + ".jpg" + " gespeichert.")
+                    print("Foto wurde unter " + self._path + self._name + ".jpg" + " gespeichert.")
         else:
             print("Die Kamera wird aktuell verwendet.")
 
