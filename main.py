@@ -12,7 +12,7 @@ def main():
     """
         1. Initialisierung des PIR Sensors
     """
-    pinNumberPIR : int  = 2
+    pinNumberPIR : int  = 4
     init_pir(pinNumberPIR)
 
     """
@@ -41,18 +41,15 @@ def main():
     browser : Camerasettings = Camerasettings(name, path)
     set_objListValue(browser)
 
-    try:
-        while True:
-            try:
-                timeInSeconds = 60
-                #enable_motionDetector(timeInSeconds)
-                time.sleep(timeInSeconds)
-
-            except KeyboardInterrupt:
-                exit_pir()
-                break
-    finally:
-        print("Auf Wiedersehen...")
+    while True:
+        try:
+            timeInSeconds = 60
+            #enable_motionDetector(timeInSeconds)
+            time.sleep(timeInSeconds)
+        except KeyboardInterrupt:
+            print("Auf Wiedersehen...")
+            exit_pir()
+            sys.exit()
 
 if __name__ == "__main__":
     main()
