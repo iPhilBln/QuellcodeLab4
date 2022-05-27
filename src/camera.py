@@ -226,7 +226,7 @@ def enable_motionDetector(timeInSeconds):
 
 """
     alle angelegten Kameraeinstellungen werden in einer List gespeichert
-    Funktionen um die Liste zu bearbeiten
+    Funktionen um die Liste zu bearbeiten:
     Initialisierung  der Liste : init_objList
     Holen der Liste : get_objList
     Objekt zur Liste hinzufügen : set_objListValue
