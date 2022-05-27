@@ -24,22 +24,18 @@ class Camerasettings(picamera.PiCamera):
     cameraInUse : bool = False
 
     #Standardkonstruktor: Intialisiert die Attribute des Objekts
-    def __init__(self,  objName: str = None,
-                        objPath: str = None,
-                        objWidth: int = None,
-                        objHight: int = None,
-                        objRotation: int = None,
-                        objEffect: str = None):
+    def __init__(self,  name: str = None,
+                        path: str = None,
+                        width: int = None,
+                        hight: int = None,
+                        rotation: int = None,
+                        effect: str = None):
 
-        if type(objName) is str:
-            self.set_name(objName)
-        else:
-            self.set_name("unkown")
+        if type(name) is str: self.set_name(name)
+        else: self.set_name("unkown")
 
-        if type(objPath) is str:
-            self.set_path(objPath)
-        else:
-            self.set_path(wd)
+        if type(path) is str: self.set_path(path)
+        else: self.set_path(wd)
 
         if type(width) is int: self.set_width(width)
         else: self.set_width(1024)
@@ -56,80 +52,80 @@ class Camerasettings(picamera.PiCamera):
     #GETTER, SETTER, DELETER Methoden
     #Attribut: name
     def get_name(self):
-        return self.name
-    def set_name(self, objName: str):
-        self.name = objName
+        return self._name
+    def set_name(self, name: str):
+        self._name = name
     def del_name(self):
-        del self.name
+        del self._name
     name = property(get_name, set_name, del_name)
 
     #Attribut: path
     def get_path(self):
-        return self.path
+        return self._path
     def set_path(self, path: str):
         if path[-1] == "/":
-            self.path = path[:-1] + "/" + self.name
+            self._path = path[:-1] + "/" + self._name
         else:
-            self.path = path + "/" + self.name
+            self._path = path + "/" + self._name
     def del_path(self):
-        del self.path
+        del self._path
     path = property(get_path, set_path, del_path)
 
     #Attribut: width
     def get_width(self):
-        return self.width
+        return self._width
     def set_width(self, width: int):
-        self.width = width
+        self._width = width
     def del_width(seld):
-        del self.width
+        del self._width
     width = property(get_width, set_width, del_width)
 
     #Attribut: hight
     def get_hight(self):
-        return self.hight
+        return self._hight
     def set_hight(self, hight: int):
-        self.hight = hight
+        self._hight = hight
     def del_hight(self):
-        del self.hight
+        del self._hight
     hight = property(get_hight, set_hight, del_hight)
 
     #Attribut: rotation
     def get_rotation(self):
-        return self.rotation
+        return self._rotation
     def set_rotation(self, rotation: int):
-        self.rotation = rotation
+        self._rotation = rotation
     def del_rotation(self):
-        del self.rotation
+        del self._rotation
     rotation = property(get_rotation, set_rotation, del_rotation)
 
     #Attribut: effect
     def get_effect(self):
-        return self.effect
+        return self._effect
     def set_effect(self, effect: str):
-        self.effect = effect
+        self._effect = effect
     def del_effect(self):
-        del self.effect
+        del self._effect
     effect = property(get_effect, set_effect, del_effect)
 
 #Override Methoden
     def __str__(self):
-        return  "Name: " + str(self.name) + "\n" +\
-                "Path: " + str(self.path) + "\n" +\
-                "Width: " + str(self.width) + "\n" +\
-                "Hight: " + str(self.hight) + "\n" +\
-                "Rotation: " + str(self.rotation) + "\n" +\
-                "Effect: " + str(self.effect)
+        return  "Name: " + str(self._name) + "\n" +\
+                "Path: " + str(self._path) + "\n" +\
+                "Width: " + str(self._width) + "\n" +\
+                "Hight: " + str(self._hight) + "\n" +\
+                "Rotation: " + str(self._rotation) + "\n" +\
+                "Effect: " + str(self._effect)
 
 #Klassenmethoden definieren um die Kamera der Klasse
 #zugänglich zu machen
     #alle möglichen Kameraeffekte ausgeben
     @staticmethod
     def print_effects():
-        with picamera.PiCamera() as camera:
-            print("Diese Effekte stehen zur Auswahl:")
-            for effectName in camera.IMAGE_EFFECTS:
-                print("\t" + effectName)
-            camera.close()
+        camera : picamera.PiCamera = picamera.PiCamera()
+        print("Diese Effekte stehen zur Auswahl:")
+        for effectName in camera.IMAGE_EFFECTS:
+            print("\t" + effectName)
+        camera.close()
     """
         @classmethod
         def init(cls):
@@ -146,13 +142,13 @@ class Camerasettings(picamera.PiCamera):
     def get_picture(self, cameraWarmup):
         if not Camerasettings.cameraInUse:
             Camerasettings.cameraInUse = True
-            with picamera.PiCamera(resolution = (self.width, self.hight)) as camera:
-                camera.rotation = self.rotation
-                camera.image_effect = self.effect
+            with picamera.PiCamera(resolution = (self._width, self._hight)) as camera:
+                camera.rotation = self._rotation
+                camera.image_effect = self._effect
                 try:
                     camera.start_preview()
                     time.sleep(cameraWarmup)
-                    camera.capture(self.path + ".jpg")
+                    camera.capture(self._path + ".jpg")
                 except PiCameraError as err:
                     print("unerwarteter Fehler: " + str(err))
                     camera.stop_preview()
@@ -164,16 +160,16 @@ class Camerasettings(picamera.PiCamera):
                     camera.stop_preview()
                     camera.close()
                     Camerasettings.cameraInUse = False
-                    print("Foto wurde unter " + self.path + ".jpg" + " gespeichert.")
+                    print("Foto wurde unter " + self._path + ".jpg" + " gespeichert.")
         else:
             print("Die Kamera wird aktuell verwendet.")
 
     def start_stream(self):
         if not Camerasettings.cameraInUse:
             Camerasettings.cameraInUse = True
-            with picamera.PiCamera(  resolution = (self.width, self.hight),
-                            rotation = self.rotation,
-                            effect = self.effect,
+            with picamera.PiCamera(  resolution = (self._width, self._hight),
+                            rotation = self._rotation,
+                            effect = self._effect,
                             framerate = 24) as camera:
                 output = StreamingOutput()
                 camera.start_recording(output, format='mjpeg')
@@ -250,7 +246,7 @@ def set_objListValue(obj : Camerasettings) -> Camerasettings:
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
     finally:
-        print(obj.name + " wurde erfolgreich zur Objektliste hinzugefügt.")
+        print(obj._name + " wurde erfolgreich zur Objektliste hinzugefügt.")
         return
 
 def del_objListValue(obj : Camerasettings) -> Camerasettings:
@@ -259,5 +255,5 @@ def del_objListValue(obj : Camerasettings) -> Camerasettings:
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
     finally:
-        print(obj.name + " wurde erfolgreich von der Objektliste gelöscht.")
+        print(obj.get_name() + " wurde erfolgreich von der Objektliste gelöscht.")
         return
