@@ -64,10 +64,14 @@ class Camerasettings(picamera.PiCamera):
     def get_path(self):
         return self._path
     def set_path(self, path: str):
+        if path[0] == "/":
+            path = path[1:]
         if path[-1] == "/":
-            self._path = path[:-1] + "/" + self._name
+            self._path = "/" + path[:-1] + "/" + self._name
         else:
             self._path = path + "/" + self._name
+        if not os.path.exists(self._path):
+            os.makedirs(self._path)
     def del_path(self):
         del self._path
     path = property(get_path, set_path, del_path)
@@ -122,11 +126,11 @@ class Camerasettings(picamera.PiCamera):
     #alle möglichen Kameraeffekte ausgeben
     @staticmethod
     def print_effects():
-        camera : picamera.PiCamera = picamera.PiCamera()
-        print("Diese Effekte stehen zur Auswahl:")
-        for effectName in camera.IMAGE_EFFECTS:
-            print("\t" + effectName)
-        camera.close()
+        with picamera.PiCamera() as camera:
+            print("Diese Effekte stehen zur Auswahl:")
+            for effectName in camera.IMAGE_EFFECTS:
+                print("\t" + effectName)
+            camera.close()
     """
         @classmethod
         def init(cls):
