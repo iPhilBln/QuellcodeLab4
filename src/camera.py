@@ -224,6 +224,15 @@ def enable_motionDetector(timeInSeconds):
         except KeyboardInterrupt:
             camera.stop_recording()
 
+"""
+    alle angelegten Kameraeinstellungen werden in einer List gespeichert
+    Funktionen um die Liste zu bearbeiten
+    Initialisierung  der Liste : init_objList
+    Holen der Liste : get_objList
+    Objekt zur Liste hinzufügen : set_objListValue
+    Objekt aus der Liste löschen : del_objListValue
+"""
+
 objList : list = []
 
 def init_objList():
