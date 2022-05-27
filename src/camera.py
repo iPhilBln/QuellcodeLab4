@@ -39,10 +39,10 @@ class Camerasettings(picamera.PiCamera):
         else: self.set_path(wd)
 
         if type(width) is int: self.set_width(width)
-        else: self.set_width(1024)
+        else: self.set_width(2592)
 
         if type(hight) is int: self.set_hight(hight)
-        else: self.set_hight(768)
+        else: self.set_hight(1944)
 
         if type(rotation) is int: self.set_rotation(rotation)
         else: self.set_rotation(180)
@@ -215,7 +215,7 @@ class MyMotionDetector(picamera.array.PiMotionAnalysis):
         if (a > 60).sum() > 10 and MyMotionDetector.motionDetectionEnable:
             print('Motion detected!')
 
-def enable_motionDetector(timeInSeconds):
+def enable_motionDetector(timeInSeconds : int) -> int:
     with picamera.PiCamera( resolution = (640, 480),
                             framerate = 30) as camera:
         try:
@@ -257,6 +257,7 @@ def set_objListValue(obj : Camerasettings) -> Camerasettings:
         objList.append(obj)
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
+        return
     finally:
         print(obj._name + " wurde erfolgreich zur Objektliste hinzugefügt.")
         return
@@ -266,6 +267,7 @@ def del_objListValue(obj : Camerasettings) -> Camerasettings:
         objList.remove(obj)
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
+        return
     finally:
         print(obj._name + " wurde erfolgreich von der Objektliste gelöscht.")
         return
