@@ -57,8 +57,8 @@ class Camerasettings(picamera.PiCamera):
     #Attribut: name
     def get_name(self):
         return self.name
-    def set_name(self, name: str):
-        self.name = name
+    def set_name(self, objName: str):
+        self.name = objName
     def del_name(self):
         del self.name
     name = property(get_name, set_name, del_name)
