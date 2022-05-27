@@ -255,5 +255,5 @@ def del_objListValue(obj : Camerasettings) -> Camerasettings:
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
     finally:
-        print(obj.get_name() + " wurde erfolgreich von der Objektliste gelöscht.")
+        print(obj._name + " wurde erfolgreich von der Objektliste gelöscht.")
         return
