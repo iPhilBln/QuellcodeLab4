@@ -4,6 +4,7 @@ import time
 from src.camera import get_objList
 
 def init_pir(pinNumberPIR):
+    print(pinNumberPIR)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(pinNumberPIR, GPIO.IN)
     GPIO.add_event_detect(pinNumberPIR , GPIO.RISING, callback=mein_callback)
@@ -18,7 +19,7 @@ def mein_callback(channel):
         objList = get_objList()
         for app in objList:
             app.get_picture(cameraWarmup)
-            sleep(cameraWarmup)
+            time.sleep(cameraWarmup)
         return
     except Exception as err:
         print("Unerwarteter Fehler: " + err)
