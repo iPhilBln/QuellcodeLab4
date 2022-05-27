@@ -109,6 +109,7 @@ class Camerasettings(picamera.PiCamera):
     effect = property(get_effect, set_effect, del_effect)
 
 #Override Methoden
+    #Ausgabemethode für das Objekt überschreiben
     def __str__(self):
         return  "Name: " + str(self._name) + "\n" +\
                 "Path: " + str(self._path) + "\n" +\

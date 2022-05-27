@@ -4,7 +4,6 @@
 #scp -r "/Users/philippmielke/Documents/Hochschule/Modulunterlagen/6. Semester/ES/Embedded Systems 1/UE/Labor 4/Quellcode/"* phil@10.0.10.20:/home/phil/Uniprojekte/Lab4/
 
 import sys, time
-#from src.camera import Camerasettings, enable_motionDetector
 from src.camera import *
 from src.pir import *
 
@@ -30,6 +29,7 @@ def main():
                 hight : int
                 rotation : int
                 effect : str
+            - Camerasettings.print_effects() gibt alle möglichen Effekte aus
     """
     name : str = "telegram"
     path : str = "/home/phil/Uniprojekte/Lab4/Applications"
