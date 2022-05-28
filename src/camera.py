@@ -5,10 +5,11 @@ import socket
 import picamera
 import picamera.array
 import numpy as np
-from src.webserver_stream import *
+import src.webserver_stream
+#from src.webserver_stream import *
 #StreamingOutput, StreamingHandler, StreamingServer, set_page, stream
 
-class Camerasettings(picamera.PiCamera, StreamingOutput):
+class Camerasettings(picamera.PiCamera):
     """
         Objekte zum Erstellen verschiedener Kameraoptionen
         Klassenattribute:   cameraInUse : bool
@@ -168,16 +169,16 @@ class Camerasettings(picamera.PiCamera, StreamingOutput):
                 src = self._path + self._name + ".jpg"
                 #set_page(src, self._width, self._width)
 
-                output = get_output()
-                camera.start_recording(output, format='mjpeg')
+                #src.webserver_stream.output
+                camera.start_recording(src.webserver_stream.output, format='mjpeg')
                 try:
                     address = ('', 8000)
-                    server = StreamingServer(address, StreamingHandler)
-                    server.serve_forever()
+                    src.webserver_stream.server = src.webserver_stream.StreamingServer(address, StreamingHandler)
+                    src.webserver_stream.server.serve_forever()
                 except KeyboardInterrupt:
                     camera.stop_recording()
                     camera.close()
-                    server.shutdown()
+                    src.webserver_stream.server.shutdown()
                 finally:
                     camera.stop_recording()
                     camera.close()

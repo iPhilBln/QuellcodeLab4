@@ -107,7 +107,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-output : StreamingOutput = None
+output : StreamingOutput = StreamingOutput()
 
 def get_output() -> StreamingOutput:
     global output
