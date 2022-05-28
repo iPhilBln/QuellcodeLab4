@@ -5,9 +5,8 @@ import socket
 import picamera
 import picamera.array
 import numpy as np
-import src.webserver_stream
-#from src.webserver_stream import *
-#StreamingOutput, StreamingHandler, StreamingServer, set_page, stream
+#import src.webserver_stream
+from src.webserver_stream import StreamingOutput, StreamingHandler, StreamingServer, set_page, output
 
 class Camerasettings(picamera.PiCamera):
     """
@@ -15,7 +14,7 @@ class Camerasettings(picamera.PiCamera):
         Klassenattribute:   cameraInUse : bool
         Objektattribute:    name : str
                             path : str
-                            widht : int
+                            width : int
                             hight : int
                             rotation : int
                             effect : str
@@ -131,7 +130,7 @@ class Camerasettings(picamera.PiCamera):
             camera.close()
 
 #Kamerafunktionen
-    def get_picture(self, cameraWarmup : float) -> "Fotoaufnahme":
+    def get_picture(self) -> "Fotoaufnahme":
         if not Camerasettings.cameraInUse:
             Camerasettings.cameraInUse = True
             with picamera.PiCamera(resolution = (self._width, self._hight)) as camera:
@@ -139,7 +138,7 @@ class Camerasettings(picamera.PiCamera):
                 camera.image_effect = self._effect
                 try:
                     camera.start_preview()
-                    time.sleep(cameraWarmup)
+                    time.sleep(0.75)
                     camera.capture(self._path + self._name + ".jpg")
                 except PiCameraError as err:
                     print("unerwarteter Fehler: " + str(err))
@@ -166,19 +165,18 @@ class Camerasettings(picamera.PiCamera):
                                     framerate = 24) as camera:
                 camera.rotation = self._rotation
                 camera.image_effect = self._effect
-                src = self._path + self._name + ".jpg"
-                #set_page(src, self._width, self._width)
-
-                #src.webserver_stream.output
-                camera.start_recording(src.webserver_stream.output, format='mjpeg')
+                set_page(self._width, self._width)
+                camera.start_recording(output, format='mjpeg')
                 try:
                     address = ('', 8000)
-                    src.webserver_stream.server = src.webserver_stream.StreamingServer(address, StreamingHandler)
-                    src.webserver_stream.server.serve_forever()
+                    server = StreamingServer(address, StreamingHandler)
+                    server.serve_forever()
+                    time.sleep(30)
+                    server.shutdown()
                 except KeyboardInterrupt:
                     camera.stop_recording()
                     camera.close()
-                    src.webserver_stream.server.shutdown()
+                    server.shutdown()
                 finally:
                     camera.stop_recording()
                     camera.close()

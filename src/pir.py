@@ -4,7 +4,6 @@ import time
 from src.camera import get_objList
 
 def init_pir(pinNumberPIR):
-    print(pinNumberPIR)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(pinNumberPIR, GPIO.IN)
     GPIO.add_event_detect(pinNumberPIR , GPIO.RISING, callback=pir_callback)

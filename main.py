@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #copy all code files from host to client:
-#scp -r "/Users/philippmielke/Documents/Hochschule/Modulunterlagen/6. Semester/ES/Embedded Systems 1/UE/Labor 4/Quellcode/"* phil@10.0.10.20:/home/phil/Uniprojekte/Lab4/
+#scp -r "/Users/philippmielke/Documents/Hochschule/Modulunterlagen/6. Semester/ES/Embedded Systems 1/UE/Labor 4/Quellcode/"* uniprojekt:/home/phil/Uniprojekte/Lab4/
 
 import sys, time
 from src.camera import *
@@ -10,13 +10,11 @@ from src.pir import *
 def main():
     """
         1. Initialisierung des PIR Sensors
+        2. Initialisierung der Objektliste
     """
     pinNumberPIR : int  = 4
     init_pir(pinNumberPIR)
 
-    """
-        2. Initialisierung der Objektliste
-    """
     init_objList()
 
     """
@@ -25,7 +23,7 @@ def main():
             - mögliche Einstellungen:
                 name : str
                 path : str
-                widht : int
+                width : int
                 hight : int
                 rotation : int
                 effect : str
@@ -36,9 +34,11 @@ def main():
     telegram: Camerasettings = Camerasettings(name, path)
     set_objListValue(telegram)
 
-    name = "browser"
-    path = "/home/phil/Uniprojekte/Lab4/Applications"
-    browser : Camerasettings = Camerasettings(name, path)
+    name : str = "browser"
+    path : str = "/home/phil/Uniprojekte/Lab4/Applications"
+    width : int = 640
+    hight : int = 480
+    browser : Camerasettings = Camerasettings(name, path, width, hight)
     set_objListValue(browser)
 
     list = get_objList()

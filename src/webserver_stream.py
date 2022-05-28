@@ -9,42 +9,6 @@ import socketserver
 from threading import Condition
 from http import server
 
-#PAGE : str = ""
-"""
-# page content to be displayed
-html_text = "<!DOCTYPE html><html><head><title>Web Thermo-Hygrometer</title>" + css_text + \
-            "</head><body><h2>Web Thermo-Hygrometer</h2>" + table + timeinfo + "</body></html>"
-"""
-PAGE="""\
-<html>
-<head>
-<title>Embedded Systems Projektarbeit</title>
-</head>
-<body>
-<center><h1>Embedded Systems Projektarbeit</h1></center>
-<center><img src="stream.mjpg" width="640" height="480"></center>
-</body>
-</html>
-"""
-#"""
-
-def set_page(src, width, hight):
-    content = "<img src=\"stream.mjpg\" " + "width=\"{}\" ".format(width) + "height=\"{}\"".format(hight) + ">"
-
-    PAGE = "<!DOCTYPE html>\
-            <html>\
-            <head>\
-            <title>Embedded Systems Projektarbeit</title>\
-            </head>\
-            <body>\
-            <center><h1>Embedded Systems Projektarbeit</h1></center>\
-            <center>" + content + "</center>\
-            </body>\
-            </html>"
-
-def get_page():
-    return PAGE
-
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
@@ -108,20 +72,20 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     daemon_threads = True
 
 output : StreamingOutput = StreamingOutput()
+PAGE : str = None
 
-def get_output() -> StreamingOutput:
-    global output
-    output = StreamingOutput()
-    return output
+#<center><img src="stream.mjpg" width="640" height="480"></center>
 
-def stream(width : int, hight : int, rotation : int):
-    with picamera.PiCamera(resolution="{}x{}".format(width, hight), framerate=24) as camera:
-        #Uncomment the next line to change your Pi's Camera rotation (in degrees)
-        camera.rotation = rotation
-        camera.start_recording(output, format='mjpeg')
-        try:
-            address = ('', 8000)
-            server = StreamingServer(address, StreamingHandler)
-            server.serve_forever()
-        finally:
-            camera.stop_recording()
+def set_page(width : int, hight : int):
+    content = "<img src=\"stream.mjpg\" " + "width=\"{}\" ".format(width) + "height=\"{}\"".format(hight) + ">"
+    global PAGE
+    PAGE = "<!DOCTYPE html>\
+            <html>\
+            <head>\
+            <title>Embedded Systems Projektarbeit</title>\
+            </head>\
+            <body>\
+            <center><h1>Embedded Systems Projektarbeit</h1></center>\
+            <center>" + content + "</center>\
+            </body>\
+            </html>"
