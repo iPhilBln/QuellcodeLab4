@@ -5,9 +5,10 @@ import socket
 import picamera
 import picamera.array
 import numpy as np
-from src.webserver_stream import StreamingOutput, StreamingHandler, StreamingServer, set_page
+from src.webserver_stream import *
+#StreamingOutput, StreamingHandler, StreamingServer, set_page, stream
 
-class Camerasettings(picamera.PiCamera):
+class Camerasettings(picamera.PiCamera, StreamingOutput):
     """
         Objekte zum Erstellen verschiedener Kameraoptionen
         Klassenattribute:   cameraInUse : bool
@@ -118,30 +119,18 @@ class Camerasettings(picamera.PiCamera):
                 "Rotation: " + str(self._rotation) + "\n" +\
                 "Effect: " + str(self._effect)
 
-#Klassenmethoden definieren um die Kamera der Klasse
-#zugänglich zu machen
+#Klassenmethoden
     #alle möglichen Kameraeffekte ausgeben
     @staticmethod
-    def print_effects():
+    def print_effects() -> "Listet alle Effekte auf":
         with picamera.PiCamera() as camera:
             print("Diese Effekte stehen zur Auswahl:")
             for effectName in camera.IMAGE_EFFECTS:
                 print("\t" + effectName)
             camera.close()
-    """
-        @classmethod
-        def init(cls):
-            cls.Camerasettings.camera.start_preview()
-            sleep(2)
-            return "Kamera ist einsatzbereit"
-
-        @classmethod
-        def exit():
-            cls.Camerasettings.camera.close()
-    """
 
 #Kamerafunktionen
-    def get_picture(self, cameraWarmup):
+    def get_picture(self, cameraWarmup : float) -> "Fotoaufnahme":
         if not Camerasettings.cameraInUse:
             Camerasettings.cameraInUse = True
             with picamera.PiCamera(resolution = (self._width, self._hight)) as camera:
@@ -166,14 +155,20 @@ class Camerasettings(picamera.PiCamera):
         else:
             print("Die Kamera wird aktuell verwendet.")
 
-    def start_stream(self):
+    def start_stream_funktioniert(self) -> "Webstream einschalten":
+        stream(self._width, self._hight, self._rotation)
+
+    def start_stream(self) -> "Webstream einschalten":
         if not Camerasettings.cameraInUse:
             Camerasettings.cameraInUse = True
-            with picamera.PiCamera(  resolution = (self._width, self._hight),
-                            rotation = self._rotation,
-                            effect = self._effect,
-                            framerate = 24) as camera:
-                output = StreamingOutput()
+            with picamera.PiCamera( resolution = (self._width, self._hight),
+                                    framerate = 24) as camera:
+                camera.rotation = self._rotation
+                camera.image_effect = self._effect
+                src = self._path + self._name + ".jpg"
+                #set_page(src, self._width, self._width)
+
+                output = get_output()
                 camera.start_recording(output, format='mjpeg')
                 try:
                     address = ('', 8000)
@@ -182,6 +177,7 @@ class Camerasettings(picamera.PiCamera):
                 except KeyboardInterrupt:
                     camera.stop_recording()
                     camera.close()
+                    server.shutdown()
                 finally:
                     camera.stop_recording()
                     camera.close()
@@ -214,7 +210,7 @@ class MyMotionDetector(picamera.array.PiMotionAnalysis):
         if (a > 60).sum() > 10 and MyMotionDetector.motionDetectionEnable:
             print('Motion detected!')
 
-def enable_motionDetector(timeInSeconds : int) -> int:
+def enable_motionDetector(timeInSeconds : int):
     with picamera.PiCamera( resolution = (640, 480),
                             framerate = 30) as camera:
         try:
@@ -227,12 +223,12 @@ def enable_motionDetector(timeInSeconds : int) -> int:
             camera.stop_recording()
 
 """
-    alle angelegten Kameraeinstellungen werden in einer List gespeichert
+    alle angelegten Kameraeinstellungen werden in einer Liste gespeichert,
     Funktionen um die Liste zu bearbeiten:
-        Initialisierung  der Liste : init_objList
-        Holen der Liste : get_objList
-        Objekt zur Liste hinzufügen : set_objListValue
-        Objekt aus der Liste löschen : del_objListValue
+        init_objList : Initialisierung  der Liste
+        get_objList : Holen der Liste
+        set_objListValue : Objekt zur Liste hinzufügen
+        del_objListValue : Objekt aus der Liste löschen
 """
 
 objList : list = []
@@ -248,10 +244,10 @@ def init_objList():
         print("Die Objektliste wurde  erfolgreich zurückgesetzt.")
         return
 
-def get_objList():
+def get_objList() -> tuple:
     return objList
 
-def set_objListValue(obj : Camerasettings) -> Camerasettings:
+def set_objListValue(obj : Camerasettings):
     try:
         objList.append(obj)
     except Exception as err:
@@ -261,7 +257,7 @@ def set_objListValue(obj : Camerasettings) -> Camerasettings:
         print(obj._name + " wurde erfolgreich zur Objektliste hinzugefügt.")
         return
 
-def del_objListValue(obj : Camerasettings) -> Camerasettings:
+def del_objListValue(obj : Camerasettings):
     try:
         objList.remove(obj)
     except Exception as err:

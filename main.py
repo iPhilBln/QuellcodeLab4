@@ -47,7 +47,7 @@ def main():
         print(obj)
 
     telegram.get_picture(0.75)
-    browser.get_picture(0.75)
+    browser.start_stream()
 
     while True:
         try:

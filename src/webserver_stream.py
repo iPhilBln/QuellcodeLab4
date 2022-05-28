@@ -9,16 +9,40 @@ import socketserver
 from threading import Condition
 from http import server
 
+#PAGE : str = ""
+"""
+# page content to be displayed
+html_text = "<!DOCTYPE html><html><head><title>Web Thermo-Hygrometer</title>" + css_text + \
+            "</head><body><h2>Web Thermo-Hygrometer</h2>" + table + timeinfo + "</body></html>"
+"""
+PAGE="""\
+<html>
+<head>
+<title>Embedded Systems Projektarbeit</title>
+</head>
+<body>
+<center><h1>Embedded Systems Projektarbeit</h1></center>
+<center><img src="stream.mjpg" width="640" height="480"></center>
+</body>
+</html>
+"""
+#"""
+
 def set_page(src, width, hight):
-    PAGE = "<html>\
+    content = "<img src=\"stream.mjpg\" " + "width=\"{}\" ".format(width) + "height=\"{}\"".format(hight) + ">"
+
+    PAGE = "<!DOCTYPE html>\
+            <html>\
             <head>\
             <title>Embedded Systems Projektarbeit</title>\
             </head>\
             <body>\
             <center><h1>Embedded Systems Projektarbeit</h1></center>\
-            <center><img src={}".format(src) + "width={}".format(width) + "height={}".format(hight) + "></center>\
+            <center>" + content + "</center>\
             </body>\
             </html>"
+
+def get_page():
     return PAGE
 
 class StreamingOutput(object):
@@ -39,13 +63,14 @@ class StreamingOutput(object):
         return self.buffer.write(buf)
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
+    output = StreamingOutput()
     def do_GET(self):
         if self.path == '/':
             self.send_response(301)
             self.send_header('Location', '/index.html')
             self.end_headers()
         elif self.path == '/index.html':
-            PAGE = set_page()
+            #PAGE = get_page()
             content = PAGE.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
@@ -82,17 +107,21 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
+output : StreamingOutput = None
 
-"""
-with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+def get_output() -> StreamingOutput:
+    global output
     output = StreamingOutput()
-    #Uncomment the next line to change your Pi's Camera rotation (in degrees)
-    #camera.rotation = 90
-    camera.start_recording(output, format='mjpeg')
-    try:
-        address = ('', 8000)
-        server = StreamingServer(address, StreamingHandler)
-        server.serve_forever()
-    finally:
-        camera.stop_recording()
-"""
+    return output
+
+def stream(width : int, hight : int, rotation : int):
+    with picamera.PiCamera(resolution="{}x{}".format(width, hight), framerate=24) as camera:
+        #Uncomment the next line to change your Pi's Camera rotation (in degrees)
+        camera.rotation = rotation
+        camera.start_recording(output, format='mjpeg')
+        try:
+            address = ('', 8000)
+            server = StreamingServer(address, StreamingHandler)
+            server.serve_forever()
+        finally:
+            camera.stop_recording()
